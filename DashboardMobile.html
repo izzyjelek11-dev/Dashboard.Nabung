@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="TabunganKu" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>TabunganKu Pintar — Aplikasi Menabung Mulai Rp 5.000</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* Mobile-First Touch & Safe Area Optimizations */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    .pb-safe {
+      padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+    }
+    .bottom-nav-safe {
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* Hide Scrollbar on Swipeable Mobile Containers */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Custom Scrollbar for Desktop */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.3);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.45);
+      border-radius: 9999px;
+    }
+
+    /* Animations for Bottom Sheet & Popups */
+    @keyframes slideUpSheet {
+      0% { transform: translateY(100%); opacity: 0.5; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.94); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-sheet {
+      animation: slideUpSheet 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @media (min-width: 640px) {
+      .animate-sheet {
+        animation: popIn 0.2s ease-out forwards;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans min-h-screen pb-safe md:pb-10 transition-colors duration-300 select-none sm:select-auto">
+
+  <!-- ==========================================
+       TOAST NOTIFICATION CONTAINER (TOP ON MOBILE, BOTTOM ON DESKTOP)
+  =========================================== -->
+  <div id="toastContainer" class="fixed top-16 sm:top-auto sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 z-50 flex flex-col gap-2 pointer-events-none items-center sm:items-end"></div>
+
+  <!-- ==========================================
+       TOP NAVBAR & MOBILE APP BAR
+  =========================================== -->
+  <header class="sticky top-0 z-30 backdrop-blur-xl bg-white/90 dark:bg-slate-950/90 border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white shrink-0">
+          <i class="fa-solid fa-wallet text-sm sm:text-base"></i>
+        </div>
+        <div class="truncate">
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-base sm:text-lg font-extrabold tracking-tight bg-gradient-to-r from-emerald-500 to-cyan-500 dark:from-emerald-400 dark:to-cyan-400 bg-clip-text text-transparent truncate">
+              TabunganKu
+            </h1>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+              Min. 5Rb
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate hidden sm:block">
+            Aplikasi Celengan Harian & Perencanaan Target Finansial
+          </p>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation Tabs (Hidden on Mobile because Mobile uses Bottom Nav) -->
+      <nav class="hidden md:flex items-center p-1 rounded-xl border bg-slate-100 border-slate-200 dark:bg-slate-900/90 dark:border-slate-800">
+        <button onclick="switchTab('overview')" id="tabBtn-overview" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer bg-emerald-500 text-slate-950 shadow-sm">
+          <i class="fa-solid fa-house"></i> Beranda
+        </button>
+        <button onclick="switchTab('goals')" id="tabBtn-goals" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200">
+          <i class="fa-solid fa-bullseye"></i> Target (<span id="navGoalCount">0</span>)
+        </button>
+        <button onclick="switchTab('challenge')" id="tabBtn-challenge" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200">
+          <i class="fa-solid fa-table-cells"></i> Tantangan 5Rb
+        </button>
+        <button onclick="switchTab('analytics')" id="tabBtn-analytics" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200">
+          <i class="fa-solid fa-chart-pie"></i> Analitik & Simulasi
+        </button>
+      </nav>
+
+      <!-- Right Action Buttons (Mobile & Desktop) -->
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <!-- Quick +5Rb Button on Mobile Header -->
+        <button onclick="instantHeaderSave5k()" title="Sekali Tap Nabung Rp 5.000" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-amber-500/15 hover:bg-amber-500/25 active:scale-95 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition-all cursor-pointer">
+          <i class="fa-solid fa-bolt text-[11px]"></i>
+          <span>+5Rb</span>
+        </button>
+
+        <!-- Buat Target Baru (Desktop) -->
+        <button onclick="openNewGoalModal()" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-md shadow-emerald-500/20 transition-all cursor-pointer">
+          <i class="fa-solid fa-plus"></i>
+          <span>Target Baru</span>
+        </button>
+
+        <!-- Tombol Panduan HP & Backup Data -->
+        <button onclick="openToolsModal()" title="Pasang di HP & Backup Data" class="w-9 h-9 rounded-xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-emerald-600 dark:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors cursor-pointer">
+          <i class="fa-solid fa-mobile-screen-button text-xs"></i>
+        </button>
+
+        <!-- Tombol Tema Terang / Gelap -->
+        <button onclick="toggleTheme()" id="themeToggleBtn" title="Ubah Tema Terang / Gelap" class="w-9 h-9 rounded-xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-amber-500 dark:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors cursor-pointer">
+          <i id="themeIcon" class="fa-solid fa-sun text-xs"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       MAIN CONTENT CONTAINER
+  =========================================== -->
+  <main class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5">
+
+    <!-- ==========================================
+         MOBILE QUICK ACTION BAR (HANYA MUNCUL DI HP)
+    =========================================== -->
+    <section class="md:hidden p-3.5 rounded-2xl border bg-gradient-to-r from-emerald-950/80 via-slate-900 to-slate-900 border-emerald-500/30 text-white shadow-lg">
+      <div class="flex items-center justify-between gap-2 mb-2.5">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-xs font-bold text-emerald-300">Celengan Kilat HP (1-Tap Nabung)</span>
+        </div>
+        <button onclick="openToolsModal()" class="text-[11px] text-amber-300 underline font-medium">
+          Pasang di HP →
+        </button>
+      </div>
+      <div class="grid grid-cols-4 gap-2">
+        <button onclick="quickMobileDeposit(5000)" class="py-2 px-1 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 active:scale-95 border border-emerald-500/40 text-center transition-all">
+          <span class="block text-[10px] text-emerald-300">Receh</span>
+          <span class="text-xs font-extrabold text-white">+5 Rb</span>
+        </button>
+        <button onclick="quickMobileDeposit(10000)" class="py-2 px-1 rounded-xl bg-slate-800/90 hover:bg-slate-800 active:scale-95 border border-slate-700 text-center transition-all">
+          <span class="block text-[10px] text-slate-400">Harian</span>
+          <span class="text-xs font-extrabold text-white">+10 Rb</span>
+        </button>
+        <button onclick="quickMobileDeposit(20000)" class="py-2 px-1 rounded-xl bg-slate-800/90 hover:bg-slate-800 active:scale-95 border border-slate-700 text-center transition-all">
+          <span class="block text-[10px] text-slate-400">Hemat</span>
+          <span class="text-xs font-extrabold text-white">+20 Rb</span>
+        </button>
+        <button onclick="quickMobileDeposit(50000)" class="py-2 px-1 rounded-xl bg-slate-800/90 hover:bg-slate-800 active:scale-95 border border-slate-700 text-center transition-all">
+          <span class="block text-[10px] text-slate-400">Rutin</span>
+          <span class="text-xs font-extrabold text-white">+50 Rb</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ROW 1: 4 KARTU RINGKASAN KPI (2x2 COMPACT GRID ON MOBILE, 4 COLS ON DESKTOP)
+    =========================================== -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <!-- KPI 1: Total Tabungan Saat Ini -->
+      <div class="p-3.5 sm:p-5 rounded-2xl border bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/40 border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center justify-between gap-1 mb-2">
+          <span class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Total Tabungan</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-sack-dollar text-xs sm:text-sm"></i>
+          </div>
+        </div>
+        <div id="kpiTotalSaved" class="text-base sm:text-2xl font-extrabold tracking-tight mb-1 truncate">Rp 0</div>
+        <div class="flex items-center gap-1 text-[10px] sm:text-xs">
+          <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold">
+            Min. 5Rb
+          </span>
+          <span class="text-slate-500 dark:text-slate-400 truncate hidden sm:inline">aktif</span>
+        </div>
+      </div>
+
+      <!-- KPI 2: Total Target Keseluruhan -->
+      <div onclick="switchTab('goals')" class="p-3.5 sm:p-5 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm cursor-pointer active:scale-[0.99] transition-transform">
+        <div class="flex items-center justify-between gap-1 mb-2">
+          <span class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Total Target</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-500/15 text-indigo-500 dark:text-indigo-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-bullseye text-xs sm:text-sm"></i>
+          </div>
+        </div>
+        <div id="kpiTotalTarget" class="text-base sm:text-2xl font-extrabold tracking-tight mb-1.5 truncate">Rp 0</div>
+        <div class="space-y-1">
+          <div class="flex justify-between text-[10px] sm:text-xs">
+            <span id="kpiOverallPctText" class="text-slate-500 dark:text-slate-400 font-medium">0%</span>
+            <span id="kpiGoalCountText" class="text-indigo-500 dark:text-indigo-400 font-semibold">0 Pos</span>
+          </div>
+          <div class="w-full h-1.5 sm:h-2 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-800">
+            <div id="kpiOverallProgressBar" class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI 3: Tabungan Bersih Bulan Ini -->
+      <div class="p-3.5 sm:p-5 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center justify-between gap-1 mb-2">
+          <span class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Bulan Ini</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-cyan-500/15 text-cyan-500 dark:text-cyan-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-chart-line text-xs sm:text-sm"></i>
+          </div>
+        </div>
+        <div id="kpiNetMonthly" class="text-base sm:text-2xl font-extrabold tracking-tight mb-1 truncate">Rp 0</div>
+        <div class="flex items-center justify-between text-[10px] sm:text-xs gap-1">
+          <span id="kpiMonthlyIn" class="text-emerald-600 dark:text-emerald-400 font-medium truncate">
+            +Rp 0
+          </span>
+          <span id="kpiMonthlyOut" class="text-rose-500 dark:text-rose-400 font-medium truncate">
+            -Rp 0
+          </span>
+        </div>
+      </div>
+
+      <!-- KPI 4: Tantangan 5 Ribu (100 Kotak) -->
+      <div onclick="switchTab('challenge')" class="p-3.5 sm:p-5 rounded-2xl border bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:to-amber-950/30 border-slate-200 dark:border-slate-800 hover:border-amber-500/50 shadow-sm transition-all cursor-pointer active:scale-[0.99]">
+        <div class="flex items-center justify-between gap-1 mb-2">
+          <span class="text-[11px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 truncate">Celengan 5Rb</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500/15 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-fire text-xs sm:text-sm"></i>
+          </div>
+        </div>
+        <div id="kpiChallengeBoxes" class="text-base sm:text-2xl font-extrabold tracking-tight mb-1 text-amber-500 dark:text-amber-400 truncate">0/100 Kotak</div>
+        <div class="text-[10px] sm:text-xs flex items-center justify-between text-slate-500 dark:text-slate-400">
+          <strong id="kpiChallengeAmount" class="text-emerald-600 dark:text-emerald-400 truncate">Rp 0</strong>
+          <span class="text-amber-600 dark:text-amber-400 font-semibold">Buka →</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TAB 1 & 2: BERANDA & TARGET TABUNGAN
+    =========================================== -->
+    <div id="tabContent-overview" class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+      <!-- KOLOM KIRI: DAFTAR TARGET TABUNGAN (7 Cols) -->
+      <div id="sectionGoalsList" class="lg:col-span-7 space-y-4 sm:space-y-5">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm sm:text-base font-bold flex items-center gap-2">
+              <i class="fa-solid fa-bullseye text-emerald-500"></i>
+              <span>Pos Target Tabungan (<span id="goalsHeaderCount">0</span>)</span>
+            </h2>
+            <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+              Tap <strong class="text-amber-500">"+Rp 5 Rb"</strong> pada kartu untuk langsung menabung receh!
+            </p>
+          </div>
+          <button onclick="openNewGoalModal()" class="text-xs font-bold px-3 py-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-95 text-emerald-600 dark:text-emerald-400 transition-all cursor-pointer shrink-0">
+            + Target Baru
+          </button>
+        </div>
+
+        <!-- Grid Kartu Target Tabungan -->
+        <div id="goalsGridContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4"></div>
+
+        <!-- Mini Grafik Tren di Overview -->
+        <div id="miniChartCard" class="p-4 sm:p-5 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-xs sm:text-sm font-bold flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-emerald-500"></i>
+                Tren Pertumbuhan Saldo (6 Bulan)
+              </h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                Akumulasi seluruh pos tabungan Anda
+              </p>
+            </div>
+            <button onclick="switchTab('analytics')" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer">
+              Detail <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </button>
+          </div>
+          <div class="relative h-48 sm:h-56 w-full">
+            <canvas id="miniTrendChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- KOLOM KANAN: FORM CATAT TRANSAKSI (MIN 5RB) & RIWAYAT (5 Cols) -->
+      <div id="sectionTxAndHistory" class="lg:col-span-5 space-y-5">
+        <!-- Box Catat Transaksi -->
+        <div id="mainTxFormCard" class="p-4 sm:p-5 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center justify-between mb-1">
+            <h2 class="text-sm sm:text-base font-bold flex items-center gap-2">
+              <i class="fa-solid fa-coins text-emerald-500"></i>
+              Catat Setoran / Tarik
+            </h2>
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+              Min. Rp 5.000
+            </span>
+          </div>
+          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mb-3.5">
+            Mulai dari <strong>Rp 5.000</strong> saja sudah bisa dicatat ke pos tabungan pilihanmu!
+          </p>
+
+          <form id="mainTxForm" onsubmit="handleMainTransactionSubmit(event)" class="space-y-3.5" novalidate>
+            <!-- Toggle Setor / Tarik -->
+            <div class="grid grid-cols-2 p-1 rounded-xl border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800">
+              <button type="button" id="btnTypeDeposit" onclick="setMainTxType('deposit')" class="py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer bg-emerald-500 text-slate-950 shadow-sm">
+                + Setor Tabungan
+              </button>
+              <button type="button" id="btnTypeWithdraw" onclick="setMainTxType('withdraw')" class="py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-slate-600 dark:text-slate-400">
+                - Tarik Dana
+              </button>
+            </div>
+
+            <!-- Pilih Target Tabungan -->
+            <div>
+              <label class="block text-xs font-semibold mb-1.5">Pilih Pos Target Tabungan</label>
+              <select id="txGoalSelect" class="w-full px-3.5 py-2.5 rounded-xl text-xs font-medium border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/40"></select>
+            </div>
+
+            <!-- Input Nominal + Validasi Minimal 5.000 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-semibold">Nominal (Rp)</label>
+                <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">Minimal Rp 5.000</span>
+              </div>
+              <input
+                type="number"
+                inputmode="numeric"
+                id="txAmountInput"
+                min="5000"
+                step="1000"
+                value="5000"
+                required
+                oninput="validateAmountInput()"
+                placeholder="Minimal 5000 (Rp 5.000)"
+                class="w-full px-3.5 py-2.5 rounded-xl text-base sm:text-sm font-bold border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/40"
+              />
+              <p id="txAmountError" class="hidden text-[11px] text-rose-500 font-medium mt-1.5 flex items-center gap-1">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="txAmountErrorText">Minimal menabung adalah Rp 5.000 (5rb). Yuk tambah sedikit lagi!</span>
+              </p>
+
+              <!-- Tombol Preset Nominal Cepat Mulai Rp 5.000 (Ramah Jempol di HP) -->
+              <div class="grid grid-cols-3 sm:flex sm:flex-wrap gap-1.5 mt-2.5">
+                <button type="button" onclick="setPresetAmount(5000)" class="preset-chip py-2 sm:py-1 px-2.5 rounded-xl sm:rounded-lg text-xs sm:text-[11px] font-bold border bg-emerald-500 text-slate-950 border-emerald-500 cursor-pointer active:scale-95 transition-all" data-amt="5000">+Rp 5 Rb</button>
+                <button type="button" onclick="setPresetAmount(10000)" class="preset-chip py-2 sm:py-1 px-2.5 rounded-xl sm:rounded-lg text-xs sm:text-[11px] font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer active:scale-95 transition-all" data-amt="10000">+Rp 10 Rb</button>
+                <button type="button" onclick="setPresetAmount(20000)" class="preset-chip py-2 sm:py-1 px-2.5 rounded-xl sm:rounded-lg text-xs sm:text-[11px] font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer active:scale-95 transition-all" data-amt="20000">+Rp 20 Rb</button>
+                <button type="button" onclick="setPresetAmount(50000)" class="preset-chip py-2 sm:py-1 px-2.5 rounded-xl sm:rounded-lg text-xs sm:text-[11px] font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer active:scale-95 transition-all" data-amt="50000">+Rp 50 Rb</button>
+                <button type="button" onclick="setPresetAmount(100000)" class="preset-chip py-2 sm:py-1 px-2.5 rounded-xl sm:rounded-lg text-xs sm:text-[11px] font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer active:scale-95 transition-all" data-amt="100000">+Rp 100 Rb</button>
+                <button type="button" onclick="setPresetAmount(250000)" class="preset-chip py-2 sm:py-1 px-2.5 rounded-xl sm:rounded-lg text-xs sm:text-[11px] font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer active:scale-95 transition-all" data-amt="250000">+Rp 250 Rb</button>
+              </div>
+            </div>
+
+            <!-- Tanggal & Catatan -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">Tanggal</label>
+                <input type="date" id="txDateInput" class="w-full px-3 py-2.5 rounded-xl text-xs border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">Catatan Singkat</label>
+                <input type="text" id="txNoteInput" placeholder="Sisihkan uang jajan 5rb" class="w-full px-3 py-2.5 rounded-xl text-xs border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none" />
+              </div>
+            </div>
+
+            <button type="submit" id="mainTxSubmitBtn" class="w-full py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all shadow-lg active:scale-[0.99] cursor-pointer bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-emerald-500/20">
+              Simpan Setoran (Min. Rp 5.000)
+            </button>
+          </form>
+        </div>
+
+        <!-- Riwayat Transaksi Terakhir -->
+        <div class="p-4 sm:p-5 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <h3 class="text-sm font-bold flex items-center gap-2">
+              <i class="fa-solid fa-clock-rotate-left text-indigo-500"></i>
+              <span>Riwayat Transaksi (<span id="txCountBadge">0</span>)</span>
+            </h3>
+            <select id="filterTxType" onchange="renderTransactions()" class="text-xs px-2.5 py-1.5 rounded-lg border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none">
+              <option value="all">Semua Tipe</option>
+              <option value="deposit">Setoran (+)</option>
+              <option value="withdraw">Penarikan (-)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <select id="filterTxGoal" onchange="renderTransactions()" class="w-full text-xs px-3 py-2 rounded-xl border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none">
+              <option value="all">Semua Pos Target Tabungan</option>
+            </select>
+          </div>
+
+          <div id="txListContainer" class="space-y-2.5 max-h-80 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         TAB 3: TANTANGAN 5 RIBU (100 KOTAK CELENGAN)
+    =========================================== -->
+    <div id="tabContent-challenge" class="hidden space-y-5">
+      <div class="p-4 sm:p-6 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 mb-2">
+              <i class="fa-solid fa-fire"></i> Tantangan Konsistensi Menabung Receh
+            </div>
+            <h2 class="text-lg sm:text-xl font-extrabold">Tantangan 100 Kotak Celengan (Mulai Rp 5.000)</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Tap kotak nomor di bawah setiap kali kamu menyisihkan uang receh. Saldo otomatis masuk ke pos tabunganmu!
+            </p>
+          </div>
+
+          <!-- Pengaturan Nominal per Kotak & Target Tujuan -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div>
+              <label class="block text-[11px] text-slate-500 dark:text-slate-400 mb-1">Nominal per Kotak:</label>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button onclick="setChallengeMode(5000)" id="chalMode-5000" class="px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-amber-500 text-slate-950 border-amber-500">Rp 5 Rb</button>
+                <button onclick="setChallengeMode(10000)" id="chalMode-10000" class="px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800">Rp 10 Rb</button>
+                <button onclick="setChallengeMode(20000)" id="chalMode-20000" class="px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800">Rp 20 Rb</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] text-slate-500 dark:text-slate-400 mb-1">Masuk ke Pos Tabungan:</label>
+              <select id="challengeGoalSelect" class="w-full sm:w-auto px-3 py-2 rounded-xl text-xs font-semibold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ringkasan Statistik Tantangan -->
+        <div class="grid grid-cols-3 gap-2.5 sm:gap-4 my-5">
+          <div class="p-3 sm:p-4 rounded-xl border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800">
+            <span class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 block">Kotak Terisi</span>
+            <div id="chalStatBoxes" class="text-sm sm:text-xl font-extrabold mt-0.5">0/100 (0%)</div>
+          </div>
+          <div class="p-3 sm:p-4 rounded-xl border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800">
+            <span class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 block">Terkumpul</span>
+            <div id="chalStatCollected" class="text-sm sm:text-xl font-extrabold text-emerald-500 mt-0.5 truncate">Rp 0</div>
+          </div>
+          <div class="p-3 sm:p-4 rounded-xl border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800">
+            <span class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 block">Target Penuh</span>
+            <div id="chalStatTarget" class="text-sm sm:text-xl font-extrabold text-amber-500 mt-0.5 truncate">Rp 500 Rb</div>
+          </div>
+        </div>
+
+        <!-- Grid 100 Kotak (5 Kolom Nyaman di HP, 10 Kolom di Desktop) -->
+        <div id="challengeGridContainer" class="grid grid-cols-5 sm:grid-cols-10 gap-2"></div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         TAB 4: ANALITIK GRAFIK & SIMULASI PROYEKSI
+    =========================================== -->
+    <div id="tabContent-analytics" class="hidden space-y-5">
+      <!-- Baris Atas: Grafik Distribusi & Pertumbuhan -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="lg:col-span-7 p-4 sm:p-6 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
+          <h3 class="text-sm sm:text-base font-bold mb-1">Progres Pertumbuhan Saldo vs Target</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+            Perbandingan akumulasi tabungan aktual dengan garis rencana target
+          </p>
+          <div class="relative h-60 sm:h-72 w-full">
+            <canvas id="fullTrendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 p-4 sm:p-6 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold mb-1">Distribusi Alokasi Dana</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+              Porsi tabungan berdasarkan masing-masing pos tujuan finansial
+            </p>
+            <div class="relative h-52 sm:h-56 w-full flex items-center justify-center">
+              <canvas id="allocationDonutChart"></canvas>
+            </div>
+          </div>
+          <div id="donutLegendContainer" class="space-y-2 mt-4"></div>
+        </div>
+      </div>
+
+      <!-- Baris Bawah: Kalkulator Simulasi Bunga Majemuk (Mulai Rp 5.000/hari) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- Panel Kontrol Simulasi -->
+        <div class="lg:col-span-5 p-4 sm:p-6 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold flex items-center gap-2">
+              <i class="fa-solid fa-calculator text-emerald-500"></i>
+              Kalkulator Simulasi Tabungan & Investasi
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Lihat bagaimana kebiasaan menabung <strong>Rp 5.000/hari (Rp 150.000/bulan)</strong> tumbuh berlipat ganda!
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="applySimPreset(50000, 150000)" class="py-2 px-2.5 rounded-xl text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 cursor-pointer active:scale-95">
+              Rp 5 Rb/Hari (150Rb/bln)
+            </button>
+            <button type="button" onclick="applySimPreset(100000, 300000)" class="py-2 px-2.5 rounded-xl text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-pointer active:scale-95">
+              Rp 10 Rb/Hari (300Rb/bln)
+            </button>
+          </div>
+
+          <!-- Slider 1: Dana Awal -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <span class="font-medium">Dana Awal Saat Ini</span>
+              <span id="simInitialLabel" class="font-bold text-emerald-500">Rp 50.000</span>
+            </div>
+            <input type="range" id="simInitialRange" min="0" max="20000000" step="50000" value="50000" oninput="updateSimulator()" class="w-full h-2 accent-emerald-500 cursor-pointer" />
+          </div>
+
+          <!-- Slider 2: Setoran Bulanan -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <span class="font-medium">Setoran Rutin / Bulan</span>
+              <span id="simMonthlyLabel" class="font-bold text-emerald-500">Rp 150.000 (~Rp 5 Rb/hari)</span>
+            </div>
+            <input type="range" id="simMonthlyRange" min="150000" max="10000000" step="50000" value="150000" oninput="updateSimulator()" class="w-full h-2 accent-emerald-500 cursor-pointer" />
+          </div>
+
+          <!-- Slider 3: Durasi Bulan -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <span class="font-medium">Durasi Menabung</span>
+              <span id="simMonthsLabel" class="font-bold text-indigo-500">24 Bulan (2.0 Tahun)</span>
+            </div>
+            <input type="range" id="simMonthsRange" min="6" max="120" step="6" value="24" oninput="updateSimulator()" class="w-full h-2 accent-indigo-500 cursor-pointer" />
+          </div>
+
+          <!-- Slider 4: Bunga Tahunan -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <span class="font-medium">Estimasi Bunga (% / Tahun)</span>
+              <span id="simRateLabel" class="font-bold text-amber-500">5.0% p.a.</span>
+            </div>
+            <input type="range" id="simRateRange" min="0" max="15" step="0.5" value="5" oninput="updateSimulator()" class="w-full h-2 accent-amber-500 cursor-pointer" />
+          </div>
+        </div>
+
+        <!-- Hasil Simulasi -->
+        <div class="lg:col-span-7 p-4 sm:p-6 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+            <div class="p-3.5 rounded-xl border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">Total Pokok Setoran</span>
+              <span id="simResultPrincipal" class="text-sm sm:text-base font-extrabold">Rp 0</span>
+            </div>
+            <div class="p-3.5 rounded-xl border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800">
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">Estimasi Hasil Bunga</span>
+              <span id="simResultInterest" class="text-sm sm:text-base font-extrabold text-emerald-500">+Rp 0</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30">
+              <span class="text-[11px] text-emerald-600 dark:text-emerald-300 block mb-0.5">Proyeksi Saldo Akhir</span>
+              <span id="simResultFinal" class="text-base sm:text-lg font-extrabold text-emerald-600 dark:text-emerald-400">Rp 0</span>
+            </div>
+          </div>
+
+          <div class="relative h-56 sm:h-64 w-full">
+            <canvas id="simulatorChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==========================================
+       MOBILE BOTTOM NAVIGATION BAR (ALA APLIKASI BANK DIGITAL)
+  =========================================== -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800/90 bottom-nav-safe shadow-2xl">
+    <div class="grid grid-cols-5 items-center h-16 px-2 relative">
+      <!-- Menu 1: Beranda -->
+      <button onclick="switchTab('overview')" id="bNav-overview" class="flex flex-col items-center justify-center gap-1 py-1 text-emerald-500 font-bold">
+        <i class="fa-solid fa-house text-base"></i>
+        <span class="text-[10px]">Beranda</span>
+      </button>
+
+      <!-- Menu 2: Target -->
+      <button onclick="switchTab('goals')" id="bNav-goals" class="flex flex-col items-center justify-center gap-1 py-1 text-slate-400 font-medium">
+        <i class="fa-solid fa-bullseye text-base"></i>
+        <span class="text-[10px]">Target</span>
+      </button>
+
+      <!-- Menu Tengah (FAB): + Nabung Cepat -->
+      <div class="flex flex-col items-center justify-center -mt-6">
+        <button
+          onclick="openQuickTxModal(goals[0]?.id || '', 'deposit')"
+          class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 text-slate-950 shadow-lg shadow-emerald-500/30 border-4 border-slate-50 dark:border-slate-950 flex flex-col items-center justify-center active:scale-90 transition-transform cursor-pointer"
+        >
+          <i class="fa-solid fa-plus text-lg font-black"></i>
+        </button>
+        <span class="text-[10px] font-extrabold text-emerald-500 mt-0.5">+ Nabung</span>
+      </div>
+
+      <!-- Menu 4: Tantangan 5Rb -->
+      <button onclick="switchTab('challenge')" id="bNav-challenge" class="flex flex-col items-center justify-center gap-1 py-1 text-slate-400 font-medium">
+        <i class="fa-solid fa-table-cells text-base"></i>
+        <span class="text-[10px]">Kotak 5Rb</span>
+      </button>
+
+      <!-- Menu 5: Analitik & Simulasi -->
+      <button onclick="switchTab('analytics')" id="bNav-analytics" class="flex flex-col items-center justify-center gap-1 py-1 text-slate-400 font-medium">
+        <i class="fa-solid fa-chart-pie text-base"></i>
+        <span class="text-[10px]">Simulasi</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==========================================
+       MODAL 1: BUAT TARGET TABUNGAN BARU (BOTTOM SHEET DI HP)
+  =========================================== -->
+  <div id="newGoalModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm">
+    <div class="w-full max-w-lg rounded-t-3xl sm:rounded-2xl border-t sm:border p-5 sm:p-6 shadow-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 animate-sheet max-h-[90vh] overflow-y-auto">
+      <!-- Drag Handle Indicator (Mobile) -->
+      <div class="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-4 sm:hidden"></div>
+
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base sm:text-lg font-bold flex items-center gap-2">
+          <i class="fa-solid fa-bullseye text-emerald-500"></i>
+          Buat Target Tabungan Baru
+        </h3>
+        <button onclick="closeNewGoalModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleCreateGoalSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Nama Target Tabungan</label>
+          <input type="text" id="newGoalName" required placeholder="Contoh: Celengan 5 Ribuan, Beli HP Baru" class="w-full px-3.5 py-2.5 rounded-xl text-sm border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Kategori</label>
+            <select id="newGoalCategory" class="w-full px-3 py-2.5 rounded-xl text-xs font-medium border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none">
+              <option value="Tabungan Harian">Tabungan Harian / Receh</option>
+              <option value="Keamanan Finansial">Keamanan Finansial</option>
+              <option value="Investasi Jangka Panjang">Investasi Jangka Panjang</option>
+              <option value="Produktivitas & Gadget">Produktivitas & Gadget</option>
+              <option value="Pendidikan">Pendidikan</option>
+              <option value="Gaya Hidup & Liburan">Gaya Hidup & Liburan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Target Tanggal Tercapai</label>
+            <input type="date" id="newGoalDeadline" value="2027-12-31" class="w-full px-3 py-2.5 rounded-xl text-xs border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Target (Min. Rp 5.000)</label>
+            <input type="number" inputmode="numeric" id="newGoalTarget" required min="5000" step="1000" placeholder="500000" class="w-full px-3.5 py-2.5 rounded-xl text-sm font-bold border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Saldo Awal (Opsional)</label>
+            <input type="number" inputmode="numeric" id="newGoalInitial" min="0" step="1000" placeholder="5000" class="w-full px-3.5 py-2.5 rounded-xl text-sm border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Pilih Ikon</label>
+            <select id="newGoalIcon" class="w-full px-3 py-2.5 rounded-xl text-xs font-medium border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none">
+              <option value="coins">🪙 Koin / Celengan</option>
+              <option value="shield">🛡️ Dana Darurat</option>
+              <option value="trending">📈 Investasi</option>
+              <option value="laptop">💻 Laptop & Gadget</option>
+              <option value="plane">✈️ Liburan</option>
+              <option value="home">🏠 Properti</option>
+              <option value="edu">🎓 Pendidikan</option>
+              <option value="heart">❤️ Keluarga</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-1">Tema Warna</label>
+            <select id="newGoalColor" class="w-full px-3 py-2.5 rounded-xl text-xs font-medium border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none">
+              <option value="emerald">Hijau Emerald</option>
+              <option value="amber">Kuning Amber</option>
+              <option value="indigo">Biru Indigo</option>
+              <option value="cyan">Biru Cyan</option>
+              <option value="rose">Merah Rose</option>
+              <option value="purple">Ungu Royal</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:flex sm:justify-end gap-2 pt-3">
+          <button type="button" onclick="closeNewGoalModal()" class="py-3 sm:py-2 px-4 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-500 cursor-pointer">Batal</button>
+          <button type="submit" class="py-3 sm:py-2 px-5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 cursor-pointer">Simpan Target</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: TRANSAKSI CEPAT (BOTTOM SHEET DI HP)
+  =========================================== -->
+  <div id="quickTxModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm">
+    <div class="w-full max-w-md rounded-t-3xl sm:rounded-2xl border-t sm:border p-5 sm:p-6 shadow-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 animate-sheet">
+      <!-- Drag Handle Indicator (Mobile) -->
+      <div class="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-3 sm:hidden"></div>
+
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 id="quickModalTitle" class="text-base font-bold">+ Setor Tabungan</h3>
+          <p id="quickModalSubtitle" class="text-xs text-emerald-500 font-semibold">Minimal transaksi Rp 5.000</p>
+        </div>
+        <button onclick="closeQuickTxModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleQuickModalSubmit(event)" class="space-y-4" novalidate>
+        <input type="hidden" id="quickModalType" value="deposit" />
+
+        <!-- Pilih Target di Modal Cepat -->
+        <div>
+          <label class="block text-xs font-semibold mb-1">Pos Target Tujuan</label>
+          <select id="quickModalGoalSelect" class="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold mb-1">Nominal (Minimal Rp 5.000)</label>
+          <input type="number" inputmode="numeric" id="quickModalAmount" required min="5000" step="1000" value="5000" class="w-full px-3.5 py-3 rounded-xl text-base font-extrabold border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none" />
+          <p id="quickModalError" class="hidden text-[11px] text-rose-500 font-medium mt-1"></p>
+
+          <!-- Tombol Nominal Cepat di Bottom Sheet -->
+          <div class="grid grid-cols-3 gap-1.5 mt-2.5">
+            <button type="button" onclick="document.getElementById('quickModalAmount').value = 5000" class="py-2 rounded-xl text-xs font-bold border bg-emerald-500/15 border-emerald-500/40 text-emerald-500 active:scale-95 cursor-pointer">+Rp 5 Rb</button>
+            <button type="button" onclick="document.getElementById('quickModalAmount').value = 10000" class="py-2 rounded-xl text-xs font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 active:scale-95 cursor-pointer">+Rp 10 Rb</button>
+            <button type="button" onclick="document.getElementById('quickModalAmount').value = 20000" class="py-2 rounded-xl text-xs font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 active:scale-95 cursor-pointer">+Rp 20 Rb</button>
+            <button type="button" onclick="document.getElementById('quickModalAmount').value = 50000" class="py-2 rounded-xl text-xs font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 active:scale-95 cursor-pointer">+Rp 50 Rb</button>
+            <button type="button" onclick="document.getElementById('quickModalAmount').value = 100000" class="py-2 rounded-xl text-xs font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 active:scale-95 cursor-pointer">+Rp 100 Rb</button>
+            <button type="button" onclick="document.getElementById('quickModalAmount').value = 250000" class="py-2 rounded-xl text-xs font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 active:scale-95 cursor-pointer">+Rp 250 Rb</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold mb-1">Catatan</label>
+          <input type="text" id="quickModalNote" placeholder="Contoh: Nabung receh 5rb hari ini" class="w-full px-3.5 py-2.5 rounded-xl text-xs border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 outline-none" />
+        </div>
+
+        <div class="grid grid-cols-2 sm:flex sm:justify-end gap-2 pt-2">
+          <button type="button" onclick="closeQuickTxModal()" class="py-3 sm:py-2 px-4 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-500 cursor-pointer">Batal</button>
+          <button type="submit" id="quickModalConfirmBtn" class="py-3 sm:py-2 px-5 rounded-xl text-xs font-extrabold bg-emerald-500 text-slate-950 cursor-pointer">Simpan Transaksi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 3: PANDUAN PASANG DI HP & BACKUP/RESTORE DATA
+  =========================================== -->
+  <div id="toolsModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm">
+    <div class="w-full max-w-md rounded-t-3xl sm:rounded-2xl border-t sm:border p-5 sm:p-6 shadow-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 animate-sheet max-h-[90vh] overflow-y-auto space-y-5">
+      <div class="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-1 sm:hidden"></div>
+
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <i class="fa-solid fa-mobile-screen-button text-emerald-500"></i>
+          Pengaturan HP & Cadangan Data
+        </h3>
+        <button onclick="closeToolsModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Panduan Add to Home Screen -->
+      <div class="p-4 rounded-2xl border bg-emerald-500/10 border-emerald-500/30 space-y-2">
+        <h4 class="text-xs font-extrabold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-download"></i> Cara Pasang jadi Aplikasi di HP
+        </h4>
+        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+          Agar bisa dibuka layar penuh seperti aplikasi asli tanpa ketik alamat web:
+        </p>
+        <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 list-disc pl-4">
+          <li><strong>HP Android (Chrome):</strong> Ketuk ikon titik tiga <strong>(⋮)</strong> di pojok kanan atas browser, lalu pilih <strong>"Tambahkan ke Layar Utama" (Add to Home screen)</strong>.</li>
+          <li><strong>iPhone / iOS (Safari):</strong> Ketuk tombol <strong>Bagikan (Share)</strong> di bawah layar, lalu pilih <strong>"Tambah ke Layar Utama"</strong>.</li>
+        </ul>
+      </div>
+
+      <!-- Backup & Restore JSON -->
+      <div class="p-4 rounded-2xl border bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 space-y-3">
+        <h4 class="text-xs font-bold flex items-center gap-1.5">
+          <i class="fa-solid fa-cloud-arrow-down text-indigo-400"></i>
+          Backup & Pulihkan Data Tabungan
+        </h4>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400">
+          Data tabungan tersimpan otomatis di memori browser HP ini. Unduh file cadangan agar data tetap aman saat ganti HP.
+        </p>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl text-xs font-bold bg-indigo-500 hover:bg-indigo-400 text-white flex items-center justify-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-download"></i> Unduh Backup
+          </button>
+          <label class="py-2.5 px-3 rounded-xl text-xs font-bold border border-indigo-500/40 text-indigo-400 hover:bg-indigo-500/10 flex items-center justify-center gap-1.5 cursor-pointer text-center">
+            <i class="fa-solid fa-upload"></i> Pulihkan File
+            <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Reset ke Data Awal -->
+      <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <span class="text-xs text-slate-500">Ingin mulai ulang dari contoh awal?</span>
+        <button onclick="closeToolsModal(); openResetModal();" class="text-xs font-bold text-rose-500 hover:underline cursor-pointer">
+          Reset Data Contoh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 4: KONFIRMASI RESET DATA CONTOH
+  =========================================== -->
+  <div id="resetModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-2xl border p-6 shadow-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 animate-sheet">
+      <h3 class="text-base font-bold mb-2">Reset ke Data Contoh?</h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">
+        Seluruh perubahan target, tantangan 100 kotak, dan riwayat transaksi Anda akan dikembalikan ke data awal.
+      </p>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="closeResetModal()" class="py-2.5 px-4 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 text-slate-500 cursor-pointer">Batal</button>
+        <button onclick="confirmResetData()" class="py-2.5 px-4 rounded-xl text-xs font-bold bg-rose-500 hover:bg-rose-400 text-white cursor-pointer">Ya, Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       APPLICATION JAVASCRIPT LOGIC
+  =========================================== -->
+  <script>
+    const MIN_SAVING_AMOUNT = 5000; // Minimal menabung Rp 5.000
+
+    // Pemetaan Ikon FontAwesome & Tema Warna
+    const ICON_MAP = {
+      coins: 'fa-coins',
+      shield: 'fa-shield-halved',
+      trending: 'fa-chart-line',
+      laptop: 'fa-laptop-code',
+      plane: 'fa-plane-departure',
+      home: 'fa-house-chimney',
+      edu: 'fa-graduation-cap',
+      heart: 'fa-heart',
+    };
+
+    const COLOR_MAP = {
+      emerald: { hex: '#10b981', badge: 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30', bar: 'bg-emerald-500' },
+      amber:   { hex: '#f59e0b', badge: 'bg-amber-500/15 text-amber-500 border-amber-500/30', bar: 'bg-amber-500' },
+      indigo:  { hex: '#6366f1', badge: 'bg-indigo-500/15 text-indigo-500 border-indigo-500/30', bar: 'bg-indigo-500' },
+      cyan:    { hex: '#06b6d4', badge: 'bg-cyan-500/15 text-cyan-500 border-cyan-500/30', bar: 'bg-cyan-500' },
+      rose:    { hex: '#f43f5e', badge: 'bg-rose-500/15 text-rose-500 border-rose-500/30', bar: 'bg-rose-500' },
+      purple:  { hex: '#a855f7', badge: 'bg-purple-500/15 text-purple-500 border-purple-500/30', bar: 'bg-purple-500' },
+    };
+
+    // Data Awal Default
+    const DEFAULT_GOALS = [
+      {
+        id: 'goal-receh',
+        name: 'Celengan Receh 5 Ribuan',
+        category: 'Tabungan Harian',
+        targetAmount: 500000,
+        currentAmount: 145000,
+        deadline: '2026-12-31',
+        iconKey: 'coins',
+        colorId: 'amber',
+      },
+      {
+        id: 'goal-1',
+        name: 'Dana Darurat (6x Pengeluaran)',
+        category: 'Keamanan Finansial',
+        targetAmount: 30000000,
+        currentAmount: 22500000,
+        deadline: '2027-03-31',
+        iconKey: 'shield',
+        colorId: 'emerald',
+      },
+      {
+        id: 'goal-2',
+        name: 'Portofolio Reksa Dana & Saham',
+        category: 'Investasi Jangka Panjang',
+        targetAmount: 50000000,
+        currentAmount: 18750000,
+        deadline: '2027-12-31',
+        iconKey: 'trending',
+        colorId: 'indigo',
+      },
+      {
+        id: 'goal-3',
+        name: 'Upgrade Setup Kerja & Laptop',
+        category: 'Produktivitas & Gadget',
+        targetAmount: 18000000,
+        currentAmount: 14200000,
+        deadline: '2026-12-20',
+        iconKey: 'laptop',
+        colorId: 'cyan',
+      },
+    ];
+
+    const DEFAULT_TRANSACTIONS = [
+      { id: 'tx-0', goalId: 'goal-receh', type: 'deposit', amount: 5000, date: '2026-11-08', note: 'Celengan Receh Cepat (+5rb)' },
+      { id: 'tx-1', goalId: 'goal-1', type: 'deposit', amount: 2500000, date: '2026-11-05', note: 'Alokasi gaji bulanan otomatis' },
+      { id: 'tx-2', goalId: 'goal-2', type: 'deposit', amount: 1750000, date: '2026-11-03', note: 'Top up Reksa Dana Pasar Uang' },
+      { id: 'tx-3', goalId: 'goal-receh', type: 'deposit', amount: 10000, date: '2026-11-02', note: 'Sisa uang jajan harian' },
+      { id: 'tx-4', goalId: 'goal-3', type: 'deposit', amount: 1200000, date: '2026-11-01', note: 'Bonus proyek freelance' },
+      { id: 'tx-5', goalId: 'goal-3', type: 'withdraw', amount: 500000, date: '2026-10-12', note: 'Beli aksesoris keyboard mekanikal' },
+    ];
+
+    const DEFAULT_CHALLENGE = Array.from({ length: 100 }, (_, i) => ({
+      slotNumber: i + 1,
+      checked: i < 29, // 29 kotak x Rp 5.000 = Rp 145.000
+    }));
+
+    // State Aplikasi
+    let goals = [];
+    let transactions = [];
+    let challengeSlots = [];
+    let challengeNominalMode = 5000;
+    let mainTxType = 'deposit';
+
+    // Instance Chart.js
+    let miniTrendChartInstance = null;
+    let fullTrendChartInstance = null;
+    let donutChartInstance = null;
+    let simulatorChartInstance = null;
+
+    // Formatter Rupiah
+    function formatIDR(amount) {
+      const num = Number(amount) || 0;
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(num);
+    }
+
+    function formatCompactIDR(amount) {
+      const num = Number(amount) || 0;
+      if (num >= 1_000_000_000) return 'Rp ' + (num / 1_000_000_000).toFixed(1) + ' M';
+      if (num >= 1_000_000) return 'Rp ' + (num / 1_000_000).toFixed(1) + ' Jt';
+      if (num >= 1_000) return 'Rp ' + (num / 1_000).toFixed(0) + ' Rb';
+      return 'Rp ' + num;
+    }
+
+    // Load & Save LocalStorage
+    function loadState() {
+      try {
+        const g = localStorage.getItem('tkp_html_goals');
+        const t = localStorage.getItem('tkp_html_tx');
+        const c = localStorage.getItem('tkp_html_chal');
+        goals = g ? JSON.parse(g) : JSON.parse(JSON.stringify(DEFAULT_GOALS));
+        transactions = t ? JSON.parse(t) : JSON.parse(JSON.stringify(DEFAULT_TRANSACTIONS));
+        challengeSlots = c ? JSON.parse(c) : JSON.parse(JSON.stringify(DEFAULT_CHALLENGE));
+      } catch (e) {
+        goals = JSON.parse(JSON.stringify(DEFAULT_GOALS));
+        transactions = JSON.parse(JSON.stringify(DEFAULT_TRANSACTIONS));
+        challengeSlots = JSON.parse(JSON.stringify(DEFAULT_CHALLENGE));
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('tkp_html_goals', JSON.stringify(goals));
+        localStorage.setItem('tkp_html_tx', JSON.stringify(transactions));
+        localStorage.setItem('tkp_html_chal', JSON.stringify(challengeSlots));
+      } catch (e) {
+        console.error('Gagal menyimpan state:', e);
+      }
+    }
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const isError = type === 'error';
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-md animate-sheet bg-slate-900/95 text-white max-w-sm w-full sm:w-auto ${
+        isError ? 'border-rose-500/50' : 'border-emerald-500/50'
+      }`;
+      toast.innerHTML = `
+        <i class="fa-solid ${isError ? 'fa-circle-exclamation text-rose-400' : 'fa-circle-check text-emerald-400'} shrink-0"></i>
+        <span class="text-xs font-semibold leading-snug">${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Theme Switcher
+    function toggleTheme() {
+      const htmlEl = document.documentElement;
+      const isDark = htmlEl.classList.toggle('dark');
+      const icon = document.getElementById('themeIcon');
+      icon.className = isDark ? 'fa-solid fa-sun text-xs' : 'fa-solid fa-moon text-xs';
+      updateAllCharts();
+    }
+
+    // Tab Navigation (Mendukung 4 Tab di Bottom Nav HP & Desktop)
+    function switchTab(tabId) {
+      const overviewContent = document.getElementById('tabContent-overview');
+      const challengeContent = document.getElementById('tabContent-challenge');
+      const analyticsContent = document.getElementById('tabContent-analytics');
+      const sectionGoals = document.getElementById('sectionGoalsList');
+      const sectionTx = document.getElementById('sectionTxAndHistory');
+      const miniChartCard = document.getElementById('miniChartCard');
+
+      // Reset visibility
+      overviewContent.classList.add('hidden');
+      challengeContent.classList.add('hidden');
+      analyticsContent.classList.add('hidden');
+      sectionGoals.classList.remove('hidden');
+      sectionTx.classList.remove('hidden');
+      if (miniChartCard) miniChartCard.classList.remove('hidden');
+
+      if (tabId === 'overview') {
+        overviewContent.classList.remove('hidden');
+      } else if (tabId === 'goals') {
+        overviewContent.classList.remove('hidden');
+        // Di layar HP, saat klik tab Target, fokuskan ke kartu Target
+        if (window.innerWidth < 1024) {
+          sectionTx.classList.add('hidden');
+          if (miniChartCard) miniChartCard.classList.add('hidden');
+        }
+      } else if (tabId === 'challenge') {
+        challengeContent.classList.remove('hidden');
+      } else if (tabId === 'analytics') {
+        analyticsContent.classList.remove('hidden');
+        setTimeout(() => {
+          updateAllCharts();
+          updateSimulator();
+        }, 60);
+      }
+
+      // Update Desktop Tab Styles
+      ['overview', 'goals', 'challenge', 'analytics'].forEach((id) => {
+        const dBtn = document.getElementById(`tabBtn-${id}`);
+        if (dBtn) {
+          dBtn.className =
+            id === tabId
+              ? 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer bg-emerald-500 text-slate-950 shadow-sm'
+              : 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200';
+        }
+
+        // Update Mobile Bottom Nav Styles
+        const bBtn = document.getElementById(`bNav-${id}`);
+        if (bBtn) {
+          bBtn.className =
+            id === tabId
+              ? 'flex flex-col items-center justify-center gap-1 py-1 text-emerald-500 font-bold'
+              : 'flex flex-col items-center justify-center gap-1 py-1 text-slate-400 font-medium';
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Render KPI Cards
+    function renderKPIs() {
+      const totalSaved = goals.reduce((acc, g) => acc + Number(g.currentAmount || 0), 0);
+      const totalTarget = goals.reduce((acc, g) => acc + Number(g.targetAmount || 0), 0);
+      const overallPct = totalTarget > 0 ? Math.min(100, (totalSaved / totalTarget) * 100) : 0;
+
+      const monthPrefix = transactions[0]?.date?.slice(0, 7) || new Date().toISOString().slice(0, 7);
+      const monthlyIn = transactions
+        .filter((t) => t.type === 'deposit' && t.date.startsWith(monthPrefix))
+        .reduce((acc, t) => acc + Number(t.amount), 0);
+      const monthlyOut = transactions
+        .filter((t) => t.type === 'withdraw' && t.date.startsWith(monthPrefix))
+        .reduce((acc, t) => acc + Number(t.amount), 0);
+      const netMonthly = monthlyIn - monthlyOut;
+
+      const checkedCount = challengeSlots.filter((s) => s.checked).length;
+      const collectedChallenge = checkedCount * challengeNominalMode;
+
+      document.getElementById('kpiTotalSaved').textContent = formatCompactIDR(totalSaved);
+      document.getElementById('kpiTotalTarget').textContent = formatCompactIDR(totalTarget);
+      document.getElementById('kpiOverallPctText').textContent = `${overallPct.toFixed(1)}%`;
+      document.getElementById('kpiGoalCountText').textContent = `${goals.length} Pos`;
+      document.getElementById('kpiOverallProgressBar').style.width = `${overallPct}%`;
+
+      const navCount = document.getElementById('navGoalCount');
+      if (navCount) navCount.textContent = goals.length;
+
+      document.getElementById('kpiNetMonthly').textContent = formatCompactIDR(netMonthly);
+      document.getElementById('kpiMonthlyIn').innerHTML = `+${formatCompactIDR(monthlyIn)}`;
+      document.getElementById('kpiMonthlyOut').innerHTML = `-${formatCompactIDR(monthlyOut)}`;
+
+      document.getElementById('kpiChallengeBoxes').textContent = `${checkedCount}/100 Kotak`;
+      document.getElementById('kpiChallengeAmount').textContent = formatCompactIDR(collectedChallenge);
+    }
+
+    // Populate Goal Dropdown Selects
+    function populateGoalSelects() {
+      const mainSelect = document.getElementById('txGoalSelect');
+      const quickSelect = document.getElementById('quickModalGoalSelect');
+      const filterSelect = document.getElementById('filterTxGoal');
+      const chalSelect = document.getElementById('challengeGoalSelect');
+
+      const currentMain = mainSelect.value;
+      const currentFilter = filterSelect.value || 'all';
+      const currentChal = chalSelect.value;
+
+      const optionsHtml = goals
+        .map((g) => `<option value="${g.id}">${g.name} (${formatCompactIDR(g.currentAmount)})</option>`)
+        .join('');
+
+      mainSelect.innerHTML = optionsHtml;
+      if (quickSelect) quickSelect.innerHTML = optionsHtml;
+
+      filterSelect.innerHTML =
+        `<option value="all">Semua Pos Target Tabungan</option>` +
+        goals.map((g) => `<option value="${g.id}">${g.name}</option>`).join('');
+
+      chalSelect.innerHTML = goals
+        .map((g) => `<option value="${g.id}">${g.name}</option>`)
+        .join('');
+
+      if (currentMain && goals.some((g) => g.id === currentMain)) mainSelect.value = currentMain;
+      if (currentFilter) filterSelect.value = currentFilter;
+      if (currentChal && goals.some((g) => g.id === currentChal)) chalSelect.value = currentChal;
+    }
+
+    // Render Daftar Kartu Target Tabungan
+    function renderGoals() {
+      document.getElementById('goalsHeaderCount').textContent = goals.length;
+      const container = document.getElementById('goalsGridContainer');
+
+      if (goals.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-2 p-8 rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 text-center text-xs text-slate-500">
+            Belum ada target tabungan. Tap tombol <strong>+ Target Baru</strong> untuk memulai!
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = goals
+        .map((goal) => {
+          const iconClass = ICON_MAP[goal.iconKey] || 'fa-coins';
+          const color = COLOR_MAP[goal.colorId] || COLOR_MAP.emerald;
+          const pct = goal.targetAmount > 0 ? Math.min(100, (goal.currentAmount / goal.targetAmount) * 100) : 0;
+          const remaining = Math.max(0, goal.targetAmount - goal.currentAmount);
+
+          return `
+          <div class="p-4 sm:p-5 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800/90 flex flex-col justify-between transition-all shadow-sm">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2.5">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 ${color.badge}">
+                    <i class="fa-solid ${iconClass} text-base"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md mb-0.5 border ${color.badge}">
+                      ${goal.category}
+                    </span>
+                    <h3 class="font-bold text-sm leading-snug truncate">${goal.name}</h3>
+                  </div>
+                </div>
+                <button onclick="deleteGoal('${goal.id}')" title="Hapus Target" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 transition-colors cursor-pointer shrink-0">
+                  <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+              </div>
+
+              <div class="my-3.5 space-y-2">
+                <div class="flex items-baseline justify-between gap-2">
+                  <span class="text-base sm:text-lg font-extrabold tracking-tight">${formatIDR(goal.currentAmount)}</span>
+                  <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0">dari ${formatCompactIDR(goal.targetAmount)}</span>
+                </div>
+                <div class="w-full h-2.5 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-800">
+                  <div class="h-full rounded-full transition-all duration-500 ${color.bar}" style="width: ${pct}%"></div>
+                </div>
+                <div class="flex items-center justify-between text-xs pt-0.5">
+                  <span class="font-bold text-emerald-500">${pct.toFixed(1)}% Tercapai</span>
+                  <span class="text-slate-500 dark:text-slate-400 text-[11px]">${remaining === 0 ? '🎉 Lunas!' : 'Kurang ' + formatCompactIDR(remaining)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 mt-1 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+              <!-- Tombol Kilat 1-Tap +Rp 5.000 -->
+              <button onclick="instantSave5k('${goal.id}')" class="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-extrabold bg-amber-500/15 hover:bg-amber-500/25 active:scale-95 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition-all cursor-pointer">
+                <i class="fa-solid fa-bolt"></i> +Rp 5 Rb
+              </button>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="openQuickTxModal('${goal.id}', 'withdraw')" class="px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/70 active:scale-95 text-slate-700 dark:text-slate-300 transition-all cursor-pointer">
+                  Tarik
+                </button>
+                <button onclick="openQuickTxModal('${goal.id}', 'deposit')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 transition-all cursor-pointer">
+                  + Setor
+                </button>
+              </div>
+            </div>
+          </div>`;
+        })
+        .join('');
+    }
+
+    // Sekali Tap Nabung Rp 5.000 dari Kartu Goal / Header
+    function instantSave5k(goalId) {
+      const goal = goals.find((g) => g.id === goalId) || goals[0];
+      if (!goal) return;
+
+      goal.currentAmount = Number(goal.currentAmount) + MIN_SAVING_AMOUNT;
+      transactions.unshift({
+        id: 'tx-' + Date.now(),
+        goalId: goal.id,
+        type: 'deposit',
+        amount: MIN_SAVING_AMOUNT,
+        date: new Date().toISOString().split('T')[0],
+        note: 'Celengan Receh Cepat (+Rp 5.000)',
+      });
+
+      saveState();
+      refreshAllUI();
+      showToast(`Mantap! +${formatIDR(MIN_SAVING_AMOUNT)} masuk ke "${goal.name}"`);
+    }
+
+    function instantHeaderSave5k() {
+      if (goals.length === 0) {
+        openNewGoalModal();
+        return;
+      }
+      instantSave5k(goals[0].id);
+    }
+
+    function quickMobileDeposit(amountVal) {
+      if (goals.length === 0) {
+        openNewGoalModal();
+        return;
+      }
+      const targetGoal = goals[0];
+      targetGoal.currentAmount = Number(targetGoal.currentAmount) + amountVal;
+      transactions.unshift({
+        id: 'tx-' + Date.now(),
+        goalId: targetGoal.id,
+        type: 'deposit',
+        amount: amountVal,
+        date: new Date().toISOString().split('T')[0],
+        note: `Celengan Kilat HP (+${formatCompactIDR(amountVal)})`,
+      });
+      saveState();
+      refreshAllUI();
+      showToast(`Berhasil! +${formatIDR(amountVal)} masuk ke "${targetGoal.name}"`);
+    }
+
+    // Hapus Target Tabungan
+    function deleteGoal(goalId) {
+      const goal = goals.find((g) => g.id === goalId);
+      if (!goal) return;
+      goals = goals.filter((g) => g.id !== goalId);
+      transactions = transactions.filter((t) => t.goalId !== goalId);
+      saveState();
+      refreshAllUI();
+      showToast(`Target "${goal.name}" telah dihapus.`);
+    }
+
+    // Form Transaksi Utama (Setor / Tarik & Validasi Min 5.000)
+    function setMainTxType(type) {
+      mainTxType = type;
+      const btnDep = document.getElementById('btnTypeDeposit');
+      const btnWit = document.getElementById('btnTypeWithdraw');
+      const submitBtn = document.getElementById('mainTxSubmitBtn');
+
+      if (type === 'deposit') {
+        btnDep.className = 'py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer bg-emerald-500 text-slate-950 shadow-sm';
+        btnWit.className = 'py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-slate-600 dark:text-slate-400';
+        submitBtn.textContent = 'Simpan Setoran (Min. Rp 5.000)';
+        submitBtn.className = 'w-full py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all shadow-lg cursor-pointer bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-emerald-500/20';
+      } else {
+        btnWit.className = 'py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer bg-rose-500 text-white shadow-sm';
+        btnDep.className = 'py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-slate-600 dark:text-slate-400';
+        submitBtn.textContent = 'Catat Penarikan Dana (Min. Rp 5.000)';
+        submitBtn.className = 'w-full py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all shadow-lg cursor-pointer bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-rose-500/20';
+      }
+    }
+
+    function setPresetAmount(amount) {
+      const input = document.getElementById('txAmountInput');
+      input.value = amount;
+      validateAmountInput();
+      document.querySelectorAll('.preset-chip').forEach((btn) => {
+        const isActive = Number(btn.getAttribute('data-amt')) === amount;
+        btn.className = isActive
+          ? 'preset-chip py-2 sm:py-1 px-2.5 rounded-xl sm:rounded-lg text-xs sm:text-[11px] font-bold border bg-emerald-500 text-slate-950 border-emerald-500 cursor-pointer active:scale-95 transition-all'
+          : 'preset-chip py-2 sm:py-1 px-2.5 rounded-xl sm:rounded-lg text-xs sm:text-[11px] font-bold border bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer active:scale-95 transition-all';
+      });
+    }
+
+    function validateAmountInput() {
+      const val = Number(document.getElementById('txAmountInput').value);
+      const errEl = document.getElementById('txAmountError');
+      if (val > 0 && val < MIN_SAVING_AMOUNT) {
+        errEl.classList.remove('hidden');
+        return false;
+      } else {
+        errEl.classList.add('hidden');
+        return true;
+      }
+    }
+
+    function handleMainTransactionSubmit(e) {
+      e.preventDefault();
+      const goalId = document.getElementById('txGoalSelect').value;
+      const amount = Number(document.getElementById('txAmountInput').value);
+      const date = document.getElementById('txDateInput').value || new Date().toISOString().split('T')[0];
+      const note = document.getElementById('txNoteInput').value.trim();
+
+      if (!goalId) {
+        showToast('Pilih pos target tabungan terlebih dahulu!', 'error');
+        return;
+      }
+
+      if (amount < MIN_SAVING_AMOUNT) {
+        document.getElementById('txAmountError').classList.remove('hidden');
+        showToast(`Minimal menabung adalah ${formatIDR(MIN_SAVING_AMOUNT)} (5rb)!`, 'error');
+        return;
+      }
+
+      const goal = goals.find((g) => g.id === goalId);
+      if (!goal) return;
+
+      if (mainTxType === 'withdraw' && amount > goal.currentAmount) {
+        showToast('Saldo pada target ini tidak mencukupi untuk penarikan!', 'error');
+        return;
+      }
+
+      goal.currentAmount =
+        mainTxType === 'deposit'
+          ? Number(goal.currentAmount) + amount
+          : Math.max(0, Number(goal.currentAmount) - amount);
+
+      transactions.unshift({
+        id: 'tx-' + Date.now(),
+        goalId: goal.id,
+        type: mainTxType,
+        amount: amount,
+        date: date,
+        note: note || (mainTxType === 'deposit' ? 'Setoran tabungan rutin' : 'Penarikan dana'),
+      });
+
+      document.getElementById('txNoteInput').value = '';
+      saveState();
+      refreshAllUI();
+      showToast(`${mainTxType === 'deposit' ? 'Setoran' : 'Penarikan'} ${formatIDR(amount)} berhasil dicatat!`);
+    }
+
+    // Render Riwayat Transaksi
+    function renderTransactions() {
+      const typeFilter = document.getElementById('filterTxType').value;
+      const goalFilter = document.getElementById('filterTxGoal').value;
+      const container = document.getElementById('txListContainer');
+
+      const filtered = transactions.filter((t) => {
+        const matchType = typeFilter === 'all' || t.type === typeFilter;
+        const matchGoal = goalFilter === 'all' || t.goalId === goalFilter;
+        return matchType && matchGoal;
+      });
+
+      document.getElementById('txCountBadge').textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-xs text-center py-6 text-slate-400">Belum ada transaksi untuk filter ini.</p>`;
+        return;
+      }
+
+      container.innerHTML = filtered
+        .map((tx) => {
+          const goal = goals.find((g) => g.id === tx.goalId);
+          const isDep = tx.type === 'deposit';
+          return `
+          <div class="p-3 rounded-xl border bg-slate-50 dark:bg-slate-950/60 border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                isDep ? 'bg-emerald-500/15 text-emerald-500' : 'bg-rose-500/15 text-rose-500'
+              }">
+                <i class="fa-solid ${isDep ? 'fa-arrow-up-right-from-square' : 'fa-arrow-down-left'} text-xs"></i>
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-bold truncate">${goal ? goal.name : 'Target Dihapus'}</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${tx.note} • ${tx.date}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-xs font-extrabold ${isDep ? 'text-emerald-500' : 'text-rose-500'}">
+                ${isDep ? '+' : '-'}${formatCompactIDR(tx.amount)}
+              </span>
+              <button onclick="deleteTransaction('${tx.id}')" title="Hapus Transaksi" class="p-1.5 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          </div>`;
+        })
+        .join('');
+    }
+
+    function deleteTransaction(txId) {
+      const tx = transactions.find((t) => t.id === txId);
+      if (!tx) return;
+      const goal = goals.find((g) => g.id === tx.goalId);
+      if (goal) {
+        goal.currentAmount =
+          tx.type === 'deposit'
+            ? Math.max(0, Number(goal.currentAmount) - Number(tx.amount))
+            : Number(goal.currentAmount) + Number(tx.amount);
+      }
+      transactions = transactions.filter((t) => t.id !== txId);
+      saveState();
+      refreshAllUI();
+      showToast('Catatan transaksi dihapus & saldo disesuaikan.');
+    }
+
+    // Tantangan 100 Kotak Celengan 5 Ribu
+    function setChallengeMode(nominal) {
+      challengeNominalMode = nominal;
+      [5000, 10000, 20000].forEach((val) => {
+        const btn = document.getElementById(`chalMode-${val}`);
+        btn.className =
+          val === nominal
+            ? 'px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-amber-500 text-slate-950 border-amber-500'
+            : 'px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800';
+      });
+      renderChallengeGrid();
+      renderKPIs();
+    }
+
+    function renderChallengeGrid() {
+      const checkedCount = challengeSlots.filter((s) => s.checked).length;
+      const collected = checkedCount * challengeNominalMode;
+      const targetTotal = 100 * challengeNominalMode;
+
+      document.getElementById('chalStatBoxes').textContent = `${checkedCount}/100 (${checkedCount}%)`;
+      document.getElementById('chalStatCollected').textContent = formatCompactIDR(collected);
+      document.getElementById('chalStatTarget').textContent = formatCompactIDR(targetTotal);
+
+      const labelShort = challengeNominalMode / 1000 + 'Rb';
+      const grid = document.getElementById('challengeGridContainer');
+      grid.innerHTML = challengeSlots
+        .map(
+          (slot) => `
+        <button
+          onclick="toggleChallengeSlot(${slot.slotNumber})"
+          class="py-3 px-1 rounded-xl border text-center transition-all active:scale-90 cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+            slot.checked
+              ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-600 dark:text-emerald-300 shadow-sm'
+              : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-amber-500/60'
+          }"
+        >
+          <span class="text-[10px] font-bold opacity-75">#${slot.slotNumber}</span>
+          <span class="text-xs font-extrabold">${slot.checked ? '✓' : labelShort}</span>
+        </button>`
+        )
+        .join('');
+    }
+
+    function toggleChallengeSlot(slotNumber) {
+      const slot = challengeSlots.find((s) => s.slotNumber === slotNumber);
+      if (!slot) return;
+
+      const selectedGoalId = document.getElementById('challengeGoalSelect').value || goals[0]?.id;
+      const goal = goals.find((g) => g.id === selectedGoalId) || goals[0];
+      const isChecking = !slot.checked;
+      slot.checked = isChecking;
+
+      if (goal) {
+        goal.currentAmount = isChecking
+          ? Number(goal.currentAmount) + challengeNominalMode
+          : Math.max(0, Number(goal.currentAmount) - challengeNominalMode);
+
+        if (isChecking) {
+          transactions.unshift({
+            id: 'tx-chal-' + Date.now(),
+            goalId: goal.id,
+            type: 'deposit',
+            amount: challengeNominalMode,
+            date: new Date().toISOString().split('T')[0],
+            note: `Tantangan Kotak #${slotNumber} (+${formatCompactIDR(challengeNominalMode)})`,
+          });
+          showToast(`Kotak #${slotNumber} dicentang! +${formatIDR(challengeNominalMode)} masuk ke "${goal.name}"`);
+        } else {
+          showToast(`Kotak #${slotNumber} dibatalkan (-${formatIDR(challengeNominalMode)}).`);
+        }
+      }
+
+      saveState();
+      refreshAllUI();
+    }
+
+    // Modals Handlers
+    function openNewGoalModal() {
+      document.getElementById('newGoalModal').classList.remove('hidden');
+      document.getElementById('newGoalModal').classList.add('flex');
+    }
+
+    function closeNewGoalModal() {
+      document.getElementById('newGoalModal').classList.add('hidden');
+      document.getElementById('newGoalModal').classList.remove('flex');
+    }
+
+    function handleCreateGoalSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newGoalName').value.trim();
+      const category = document.getElementById('newGoalCategory').value;
+      const deadline = document.getElementById('newGoalDeadline').value || '2027-12-31';
+      const targetAmount = Number(document.getElementById('newGoalTarget').value);
+      const initialAmount = Number(document.getElementById('newGoalInitial').value) || 0;
+      const iconKey = document.getElementById('newGoalIcon').value;
+      const colorId = document.getElementById('newGoalColor').value;
+
+      if (!name || targetAmount < MIN_SAVING_AMOUNT) {
+        showToast(`Nama wajib diisi & target minimal ${formatIDR(MIN_SAVING_AMOUNT)}!`, 'error');
+        return;
+      }
+
+      if (initialAmount > 0 && initialAmount < MIN_SAVING_AMOUNT) {
+        showToast(`Saldo awal minimal ${formatIDR(MIN_SAVING_AMOUNT)} atau kosongkan (0)!`, 'error');
+        return;
+      }
+
+      const newGoal = {
+        id: 'goal-' + Date.now(),
+        name,
+        category,
+        targetAmount,
+        currentAmount: initialAmount,
+        deadline,
+        iconKey,
+        colorId,
+      };
+
+      goals.unshift(newGoal);
+      if (initialAmount >= MIN_SAVING_AMOUNT) {
+        transactions.unshift({
+          id: 'tx-' + Date.now(),
+          goalId: newGoal.id,
+          type: 'deposit',
+          amount: initialAmount,
+          date: new Date().toISOString().split('T')[0],
+          note: 'Saldo awal pembuatan target',
+        });
+      }
+
+      e.target.reset();
+      closeNewGoalModal();
+      saveState();
+      refreshAllUI();
+      showToast(`Target "${newGoal.name}" berhasil dibuat!`);
+    }
+
+    function openQuickTxModal(goalId, type) {
+      populateGoalSelects();
+      const selectEl = document.getElementById('quickModalGoalSelect');
+      if (goalId && goals.some((g) => g.id === goalId)) {
+        selectEl.value = goalId;
+      } else if (goals[0]) {
+        selectEl.value = goals[0].id;
+      }
+
+      document.getElementById('quickModalType').value = type;
+      document.getElementById('quickModalAmount').value = 5000;
+      document.getElementById('quickModalNote').value = '';
+      document.getElementById('quickModalError').classList.add('hidden');
+
+      const isDep = type === 'deposit';
+      document.getElementById('quickModalTitle').textContent = isDep ? '+ Setor Tabungan Cepat' : '- Tarik Dana Tabungan';
+      const confirmBtn = document.getElementById('quickModalConfirmBtn');
+      confirmBtn.className = isDep
+        ? 'py-3 sm:py-2 px-5 rounded-xl text-xs font-extrabold bg-emerald-500 text-slate-950 cursor-pointer'
+        : 'py-3 sm:py-2 px-5 rounded-xl text-xs font-extrabold bg-rose-500 text-white cursor-pointer';
+
+      const modal = document.getElementById('quickTxModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeQuickTxModal() {
+      const modal = document.getElementById('quickTxModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleQuickModalSubmit(e) {
+      e.preventDefault();
+      const goalId = document.getElementById('quickModalGoalSelect').value;
+      const type = document.getElementById('quickModalType').value;
+      const amount = Number(document.getElementById('quickModalAmount').value);
+      const note = document.getElementById('quickModalNote').value.trim();
+      const errEl = document.getElementById('quickModalError');
+
+      if (amount < MIN_SAVING_AMOUNT) {
+        errEl.textContent = `Minimal transaksi adalah ${formatIDR(MIN_SAVING_AMOUNT)} (5rb).`;
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const goal = goals.find((g) => g.id === goalId);
+      if (!goal) return;
+
+      if (type === 'withdraw' && amount > goal.currentAmount) {
+        errEl.textContent = 'Saldo pada target ini tidak mencukupi untuk penarikan.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      goal.currentAmount =
+        type === 'deposit'
+          ? Number(goal.currentAmount) + amount
+          : Math.max(0, Number(goal.currentAmount) - amount);
+
+      transactions.unshift({
+        id: 'tx-' + Date.now(),
+        goalId: goal.id,
+        type,
+        amount,
+        date: new Date().toISOString().split('T')[0],
+        note: note || (type === 'deposit' ? 'Setoran cepat' : 'Penarikan dana'),
+      });
+
+      closeQuickTxModal();
+      saveState();
+      refreshAllUI();
+      showToast(`${type === 'deposit' ? 'Setoran' : 'Penarikan'} ${formatIDR(amount)} ke "${goal.name}" berhasil!`);
+    }
+
+    // Modal Panduan HP & Backup/Restore JSON
+    function openToolsModal() {
+      const modal = document.getElementById('toolsModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeToolsModal() {
+      const modal = document.getElementById('toolsModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function exportBackupJSON() {
+      const backupPayload = {
+        app: 'TabunganKu Pintar',
+        exportedAt: new Date().toISOString(),
+        goals,
+        transactions,
+        challengeSlots,
+      };
+      const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `backup-tabunganku-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('File cadangan berhasil diunduh ke HP/perangkat Anda!');
+    }
+
+    function importBackupJSON(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (Array.isArray(parsed.goals) && Array.isArray(parsed.transactions)) {
+            goals = parsed.goals;
+            transactions = parsed.transactions;
+            if (Array.isArray(parsed.challengeSlots)) challengeSlots = parsed.challengeSlots;
+            saveState();
+            refreshAllUI();
+            closeToolsModal();
+            showToast('Data cadangan berhasil dipulihkan!');
+          } else {
+            showToast('Format file backup tidak valid!', 'error');
+          }
+        } catch (err) {
+          showToast('Gagal membaca file cadangan!', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function openResetModal() {
+      document.getElementById('resetModal').classList.remove('hidden');
+      document.getElementById('resetModal').classList.add('flex');
+    }
+
+    function closeResetModal() {
+      document.getElementById('resetModal').classList.add('hidden');
+      document.getElementById('resetModal').classList.remove('flex');
+    }
+
+    function confirmResetData() {
+      localStorage.removeItem('tkp_html_goals');
+      localStorage.removeItem('tkp_html_tx');
+      localStorage.removeItem('tkp_html_chal');
+      loadState();
+      closeResetModal();
+      refreshAllUI();
+      showToast('Data contoh berhasil dipulihkan!');
+    }
+
+    // Chart.js Visualizations
+    function updateAllCharts() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridColor = isDark ? '#1e293b' : '#e2e8f0';
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+
+      const totalSaved = goals.reduce((acc, g) => acc + Number(g.currentAmount || 0), 0);
+      const totalTarget = goals.reduce((acc, g) => acc + Number(g.targetAmount || 0), 0);
+      const months = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov'];
+      const factors = [0.68, 0.74, 0.81, 0.87, 0.93, 1.0];
+      const actualSeries = factors.map((f) => Math.round(totalSaved * f));
+      const targetSeries = months.map((_, i) => Math.round((totalTarget / 12) * (i + 6)));
+
+      // 1. Mini Trend Chart (Overview)
+      const miniCtx = document.getElementById('miniTrendChart').getContext('2d');
+      if (miniTrendChartInstance) miniTrendChartInstance.destroy();
+      miniTrendChartInstance = new Chart(miniCtx, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'Total Tabungan',
+              data: actualSeries,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.18)',
+              borderWidth: 2.5,
+              fill: true,
+              tension: 0.35,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => formatIDR(ctx.raw),
+              },
+            },
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: textColor, font: { size: 11 } } },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { size: 10 }, callback: (v) => formatCompactIDR(v) },
+            },
+          },
+        },
+      });
+
+      // 2. Full Trend Chart (Analytics Tab)
+      const fullCtx = document.getElementById('fullTrendChart').getContext('2d');
+      if (fullTrendChartInstance) fullTrendChartInstance.destroy();
+      fullTrendChartInstance = new Chart(fullCtx, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'Saldo Aktual',
+              data: actualSeries,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.2)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.35,
+            },
+            {
+              label: 'Patokan Target',
+              data: targetSeries,
+              borderColor: '#6366f1',
+              borderDash: [5, 5],
+              borderWidth: 2,
+              fill: false,
+              tension: 0.35,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: textColor, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${formatIDR(ctx.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: textColor } },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, callback: (v) => formatCompactIDR(v) },
+            },
+          },
+        },
+      });
+
+      // 3. Allocation Donut Chart
+      const donutCtx = document.getElementById('allocationDonutChart').getContext('2d');
+      if (donutChartInstance) donutChartInstance.destroy();
+      const labels = goals.map((g) => g.name);
+      const values = goals.map((g) => g.currentAmount);
+      const bgColors = goals.map((g) => (COLOR_MAP[g.colorId] || COLOR_MAP.emerald).hex);
+
+      donutChartInstance = new Chart(donutCtx, {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [
+            {
+              data: values,
+              backgroundColor: bgColors,
+              borderWidth: 0,
+              hoverOffset: 6,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '68%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.label}: ${formatIDR(ctx.raw)}`,
+              },
+            },
+          },
+        },
+      });
+
+      // Render Donut Legend
+      const legendContainer = document.getElementById('donutLegendContainer');
+      legendContainer.innerHTML = goals
+        .map((g) => {
+          const hex = (COLOR_MAP[g.colorId] || COLOR_MAP.emerald).hex;
+          const pct = totalSaved > 0 ? ((g.currentAmount / totalSaved) * 100).toFixed(1) : 0;
+          return `
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2 truncate">
+              <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${hex}"></span>
+              <span class="truncate font-medium">${g.name}</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-slate-400">${pct}%</span>
+              <span class="font-bold">${formatCompactIDR(g.currentAmount)}</span>
+            </div>
+          </div>`;
+        })
+        .join('');
+    }
+
+    // Kalkulator Simulasi Bunga Majemuk
+    function applySimPreset(initialVal, monthlyVal) {
+      document.getElementById('simInitialRange').value = initialVal;
+      document.getElementById('simMonthlyRange').value = monthlyVal;
+      updateSimulator();
+    }
+
+    function updateSimulator() {
+      const simInitial = Number(document.getElementById('simInitialRange').value);
+      const simMonthly = Number(document.getElementById('simMonthlyRange').value);
+      const simMonths = Number(document.getElementById('simMonthsRange').value);
+      const simRate = Number(document.getElementById('simRateRange').value);
+
+      document.getElementById('simInitialLabel').textContent = formatIDR(simInitial);
+      document.getElementById('simMonthlyLabel').textContent = `${formatIDR(simMonthly)} (~${formatCompactIDR(Math.round(simMonthly / 30))}/hari)`;
+      document.getElementById('simMonthsLabel').textContent = `${simMonths} Bulan (${(simMonths / 12).toFixed(1)} Tahun)`;
+      document.getElementById('simRateLabel').textContent = `${simRate.toFixed(1)}% p.a.`;
+
+      const monthlyRate = simRate / 100 / 12;
+      let balance = simInitial;
+      let principal = simInitial;
+
+      const labels = [];
+      const projSeries = [];
+      const prinSeries = [];
+
+      const step = Math.max(1, Math.floor(simMonths / 8));
+      for (let m = 1; m <= simMonths; m++) {
+        balance = balance * (1 + monthlyRate) + simMonthly;
+        principal += simMonthly;
+        if (m % step === 0 || m === simMonths) {
+          labels.push(`Bln ${m}`);
+          projSeries.push(Math.round(balance));
+          prinSeries.push(Math.round(principal));
+        }
+      }
+
+      const totalInterest = Math.max(0, Math.round(balance - principal));
+      document.getElementById('simResultPrincipal').textContent = formatIDR(principal);
+      document.getElementById('simResultInterest').textContent = '+' + formatIDR(totalInterest);
+      document.getElementById('simResultFinal').textContent = formatIDR(Math.round(balance));
+
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridColor = isDark ? '#1e293b' : '#e2e8f0';
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+
+      const simCtx = document.getElementById('simulatorChart').getContext('2d');
+      if (simulatorChartInstance) simulatorChartInstance.destroy();
+      simulatorChartInstance = new Chart(simCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Proyeksi Saldo + Bunga',
+              data: projSeries,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.2)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.35,
+            },
+            {
+              label: 'Pokok Setoran',
+              data: prinSeries,
+              borderColor: '#6366f1',
+              borderDash: [4, 4],
+              borderWidth: 2,
+              fill: false,
+              tension: 0.35,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: textColor, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${formatIDR(ctx.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: textColor } },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, callback: (v) => formatCompactIDR(v) },
+            },
+          },
+        },
+      });
+    }
+
+    function refreshAllUI() {
+      populateGoalSelects();
+      renderKPIs();
+      renderGoals();
+      renderTransactions();
+      renderChallengeGrid();
+      updateAllCharts();
+    }
+
+    // Inisialisasi Saat Halaman Dimuat
+    window.onload = function () {
+      document.getElementById('txDateInput').value = new Date().toISOString().split('T')[0];
+      loadState();
+      refreshAllUI();
+      updateSimulator();
+    };
+  </script>
+</body>
+</html>
